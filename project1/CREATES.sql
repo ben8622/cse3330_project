@@ -1,8 +1,8 @@
 -- Always drop before creating to ensure a clean start --
-DROP TABLE Team;
-DROP TABLE Game;
-DROP TABLE Player;
-DROP TABLE InjuryRecord;
+DROP TABLE IF EXISTS Team;
+DROP TABLE IF EXISTS Game;
+DROP TABLE IF EXISTS Player;
+DROP TABLE IF EXISTS InjuryRecord;
 
 -- Create all of our needed tables --
 CREATE TABLE Team
@@ -11,7 +11,7 @@ CREATE TABLE Team
 	Name varchar(255),
 	City varchar(255),
 	Coach varchar(255),
-	Captain varchar(255) -- TODO: make this an int?
+	Captain varchar(255)
 );
 
 CREATE TABLE Game
