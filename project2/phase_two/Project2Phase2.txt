@@ -1,0 +1,76 @@
+1)
+INSERT INTO CUSTOMER
+VALUES ( , 'G. Mate', (111) 222-3333 );
+-- that first value may be incorrect
+
+2) 
+UPDATE CUSTOMER
+Set Phone = (837) 721-8965
+WHERE Name = 'G. Mate';
+
+3)
+UPDATE RATE 
+Set Daily = Daily * 1.05
+WHERE Category = 1;
+-- second check daily?
+
+4-a)
+INSERT INTO VEHICLE
+VALUES ( 5FNRL6H58KB133711 , 'Honda Odyssey' , 2019, 6, 1);
+
+4-b)
+INSERT INTO RATES
+VALUES (5,1,900,150) AND (6,1,800,135);
+--Does AND work here?
+5)
+--will do later
+
+6)
+SELECT Name, SUM(TotalAmount)
+FROM RENTAL, CUSTOMER
+	JOIN ON RENTAL.CustID = CUSTOMER.CustId
+WHERE CustID = 221;
+--Check on summing the total amount?
+
+7)
+--will do later
+
+8)SELECT SUM(TotalAmount);
+-- TOO EZ?
+
+9-a)
+SELECT Description, Year, Type, Category
+FROM VEHICLE, CUSTOMER
+	JOIN RENTAL ON RENTAL.CustID = CUSTOMER.CustID
+			VEHICLE.CustID = RENTAL.CustID
+WHERE Name = "J. Brown";
+
+--2 different queries??? saving for later
+
+9-b)
+SELECT SUM(TotalAmount)
+FROM RENTAL
+WHERE CustID = 221;
+--Can we hardcode this??
+
+10)
+SELECT Name, StartDate, ReturnDate, TotalAmount
+FROM RENTAL, CUSTOMER 
+	JOIN RENTAL ON RENTAL.CustID = CUSTOMER.CustID
+WHERE Vehicle ID = '19VDE1F3XEE414842' AND PaymentDate = NULL;
+--this should be good
+
+11)
+SELECT *
+FROM CUSTOMER
+	JOIN RENTAL ON RENTAL.CustID = CUSTOMER.CustID
+WHERE NOT EXISTS (CustID);
+--incorrect use of NOT EXISTS? 
+
+12)
+SELECT Name, Description, StartDate, ReturnDate, TotalAmount
+FROM CUSTOMER, VEHICLE, RENTAL
+	JOIN VEHICLE ON VEHICLE.CustID = CUSTOMER.CustID
+	JOIN RENTAL ON RENTAL.CustID = VEHICLE.CustID
+WHERE StartDate = PaymentDate
+ORDER BY Name;
