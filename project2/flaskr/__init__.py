@@ -1,11 +1,20 @@
 import os
 
 from flask import Flask
+from flask_navigation import Navigation
+from flask.templating import render_template
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    nav = Navigation(app)
+
+    nav.Bar('top', [
+        nav.Item('Home', 'index'),
+        nav.Item('Assignment', 'assignment')
+    ])
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
@@ -24,9 +33,11 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    from . import assignment
+    app.register_blueprint(assignment.bp)
+
+    @app.route('/', methods=['GET'])
+    def home():
+        return render_template('/home.html')
 
     return app
