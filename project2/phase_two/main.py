@@ -2,6 +2,10 @@ import sqlite3
 
 if __name__ == '__main__':
 
+  ##############
+  ### TASK 2 ###
+  ##############
+
   ## Open files
   customer_file = open("Car_Rental_2/CUSTOMER.csv", "r")
   rate_file = open("Car_Rental_2/RATE.csv", "r")
@@ -14,7 +18,7 @@ if __name__ == '__main__':
       line = line.strip("\n")
       entities.append(line.split(","))
     return entities
-
+ 
   ## Grab data from files
   customers = split_file(customer_file)
   rates = split_file(rate_file)
@@ -125,6 +129,9 @@ if __name__ == '__main__':
     entity[7] = float(entity[7])
     ## Convert list of attributes to a string, stripping off brackets
     entity = str(entity).strip('[]')
+    ## Check to see if value is 'NULL'
+    if "'NULL'" in entity:
+      entity = entity.replace("'NULL'", "NULL")
     ## Format our INSERT string
     insert_string = f'INSERT INTO rentals VALUES ( {entity} )'
     ## Add to execution
@@ -142,8 +149,152 @@ if __name__ == '__main__':
     ## Add to execution
     cursor.execute(insert_string)
     
-
-  
   connection.commit()
+  
+  ##############
+  ### TASK 3 ###
+  ##############
+
+  # 1
+  cursor.execute(
+    '''
+    INSERT INTO customers (Name, Phone)
+    VALUES ('L. Marconi', '(111) 222-3333' )
+    '''
+  )
+  
+  # 2
+  cursor.execute(
+    '''
+    UPDATE customers
+    Set Phone = '(837) 721-8965'
+    WHERE Name = 'L. Marconi'
+    '''
+  )
+
+  # 3
+  cursor.execute(
+    '''
+    UPDATE rates
+    Set Daily = Daily * 1.05
+    WHERE Category = 1
+    '''
+  )
+
+  # 4a
+  cursor.execute(
+    '''
+    INSERT INTO vehicles
+    VALUES ( '5FNRL6H58KB133711' , 'Honda Odyssey' , '2019', 6, 1)
+    '''
+  )
+  # 4b
+  cursor.execute(
+    '''
+    INSERT INTO RATES
+    VALUES 
+    (5,1,900,150), 
+    (6,1,800,135)
+    '''
+  )
+
+  connection.commit()
+
+  # TODO: 5 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  # 6
+  cursor.execute(
+    '''
+    SELECT Name, SUM(TotalAmount)
+    FROM customers
+	  JOIN rentals ON rentals.CustID = customers.CustId
+    WHERE customers.CustID = 221 AND rentals.PaymentDate IS NULL
+    '''
+  )
+  print("Query 6: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
+
+  # TODO: 7 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  # 8
+  cursor.execute(
+    '''
+    SELECT SUM(TotalAmount)
+    FROM rentals
+    WHERE rentals.PaymentDate IS NOT NULL
+    '''
+  )
+  print("Query 8: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
+
+  # TODO: finish 9a with extra stuff
+  cursor.execute(
+    '''
+    SELECT DISTINCT vehicles.vehicleID, Description, Year, Type, Category
+    FROM customers
+	  JOIN rentals ON rentals.CustID = customers.CustID 
+    JOIN vehicles ON vehicles.vehicleID = rentals.vehicleID
+    WHERE Name = "J. Brown"
+    '''
+  )
+  print("Query 9: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
+
+  # TODO 9b but with current balance
+
+  # 10
+  cursor.execute(
+    '''
+    SELECT Name, StartDate, ReturnDate, TotalAmount
+    FROM customers 
+    JOIN rentals ON rentals.CustID = customers.CustID
+    WHERE VehicleID = '19VDE1F3XEE414842' AND PaymentDate IS NULL AND RentalType = 7
+    '''
+  )
+  print("Query 10: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
+
+  # 11
+  cursor.execute(
+    '''
+    SELECT *
+    FROM customers
+    WHERE NOT EXISTS (
+      SELECT *
+      FROM rentals
+      WHERE customers.CustID = rentals.CustId
+    )
+    '''
+  )
+  print("Query 11: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
+
+  # 12
+  cursor.execute(
+    '''
+    SELECT Name, Description, StartDate, ReturnDate, TotalAmount
+    FROM customers
+    JOIN rentals ON rentals.CustID = customers.CustID
+    JOIN vehicles ON rentals.VehicleID = vehicles.VehicleID
+    WHERE StartDate = PaymentDate
+    ORDER BY Name;
+    '''
+  )
+  print("Query 12: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
+
+
   connection.close()
 
