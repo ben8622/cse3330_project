@@ -200,7 +200,16 @@ if __name__ == '__main__':
 
   connection.commit()
 
-  # TODO: 5 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # TODO: 5 Chris- "Not sure how to convert the rentalType into days, but
+  # 		    the WHERE I believe is corret and will provide the correct results
+  cursor.execute(
+    '''
+    SELECT VehicleID as VIN, Description, Year, RentalType
+    FROM vehicle
+    JOIN rental ON vehicle.VehicleID = rental.VehicleID
+    WHERE Type = 1 AND Category = 1 AND NOT(StartDate >= '6/1/2019' AND StartDate <= '6/20/2019');
+    '''
+  )
 
   # 6
   cursor.execute(
