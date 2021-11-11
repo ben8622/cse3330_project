@@ -204,10 +204,12 @@ if __name__ == '__main__':
   # 		    the WHERE I believe is corret and will provide the correct results
   cursor.execute(
     '''
-    SELECT VehicleID as VIN, Description, Year, RentalType
+    SELECT VehicleID as VIN, Description, Year, 
+    	CASE
+	   WHEN
     FROM vehicle
     JOIN rental ON vehicle.VehicleID = rental.VehicleID
-    WHERE Type = 1 AND Category = 1 AND NOT(StartDate >= '6/1/2019' AND StartDate <= '6/20/2019');
+    WHERE Type = 1 AND Category = 1 AND NOT(StartDate BETWEEN '6/1/2019' AND '6/20/2019')
     '''
   )
 
@@ -225,8 +227,25 @@ if __name__ == '__main__':
   for row in rows:
     print(row)
 
-  # TODO: 7 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+  # 7 
+  cursor.execute(
+    '''
+    SELECT VehicleID as VIN, Description, Year,
+	CASE
+	    WHEN Type = 1 THEN 'Compact'
+	    WHEN Type = 2 THEN 'Medium'
+	    WHEN Type = 3 THEN 'Large'
+	    WHEN Type = 4 THEN 'SUV'
+	    WHEN Type = 5 THEN 'Truck'
+	    WHEN Type = 6 THEN 'VAN'
+	END, 
+	CASE
+	    WHEN Category = 0 THEN 'Basic'
+	    WHEN Category = 1 THEN 'Luxury'
+	END 
+    FROM vehicle
+    '''
+  )
   # 8
   cursor.execute(
     '''
