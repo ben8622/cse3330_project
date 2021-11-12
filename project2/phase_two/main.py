@@ -60,7 +60,7 @@ if __name__ == '__main__':
     '''
     CREATE TABLE rates (
       Type INTEGER,
-      Category INTEGER NOT NULL,
+      Category INTEGER,
       Weekly REAL NOT NULL,
       Daily REAL NOT NULL,
       PRIMARY KEY (Type, Category)
@@ -73,11 +73,11 @@ if __name__ == '__main__':
       CustID INTEGER,
       VehicleID TEXT,
       StartDate TEXT,
-      OrderDate TEXT,
-      RentalType INTEGER,
-      Qty INTEGER,
-      ReturnDate TEXT,
-      TotalAmount REAL,
+      OrderDate TEXT NOT NULL,
+      RentalType INTEGER NOT NULL,
+      Qty INTEGER NOT NULL,
+      ReturnDate TEXT NOT NULL,
+      TotalAmount REAL NOT NULL,
       PaymentDate TEXT,
       PRIMARY KEY(CustID, VehicleID, StartDate)
     )
@@ -87,10 +87,10 @@ if __name__ == '__main__':
     '''
     CREATE TABLE vehicles (
       VehicleID TEXT PRIMARY KEY,
-      Description TEXT,
-      Year TEXT,
-      Type INTEGER,
-      Category INTEGER
+      Description TEXT NOT NULL,
+      Year TEXT NOT NULL,
+      Type INTEGER NOT NULL,
+      Category INTEGER NOT NULL
     )
     '''
   )
@@ -150,6 +150,20 @@ if __name__ == '__main__':
     cursor.execute(insert_string)
     
   connection.commit()
+
+  ## Count the rows in each table
+  cursor.execute('SELECT COUNT(*) FROM customers')
+  print("# of customers: " + str(cursor.fetchall()[0][0]))
+
+  cursor.execute('SELECT COUNT(*) FROM rates')
+  print("# of rates: " + str(cursor.fetchall()[0][0]))
+
+  cursor.execute('SELECT COUNT(*) FROM rentals')
+  print("# of rentals: " + str(cursor.fetchall()[0][0]))
+
+  cursor.execute('SELECT COUNT(*) FROM vehicles')
+  print("# of vehicles: " + str(cursor.fetchall()[0][0]))
+  
   
   ##############
   ### TASK 3 ###
@@ -200,7 +214,20 @@ if __name__ == '__main__':
 
   connection.commit()
 
-  # TODO: 5 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # 5
+  cursor.execute(
+    '''
+    SELECT v.VehicleID as VIN, v.Description, v.Year, StartDate, ReturnDate, TOTAL(ROUND(JULIANDAY(ReturnDate) - JULIANDAY(StartDate))) as DaysRented
+    FROM vehicles AS v
+    JOIN rentals AS r ON v.VehicleId = r.VehicleID
+    WHERE (v.Type = 1 OR v.Category = 1) AND (r.StartDate NOT BETWEEN "2019-06-01" AND "2019-06-20") AND (r.ReturnDate NOT BETWEEN "2019-06-01" AND "2019-06-20") 
+    GROUP BY VIN; 
+    '''
+  )
+  print("Query 5: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
 
   # 6
   cursor.execute(
@@ -216,7 +243,29 @@ if __name__ == '__main__':
   for row in rows:
     print(row)
 
-  # TODO: 7 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # 7 
+  cursor.execute(
+    '''
+    SELECT VehicleID as VIN, Description, Year,
+      CASE
+          WHEN Type = 1 THEN 'Compact'
+          WHEN Type = 2 THEN 'Medium'
+          WHEN Type = 3 THEN 'Large'
+          WHEN Type = 4 THEN 'SUV'
+          WHEN Type = 5 THEN 'Truck'
+          WHEN Type = 6 THEN 'VAN'
+      END, 
+      CASE
+          WHEN Category = 0 THEN 'Basic'
+          WHEN Category = 1 THEN 'Luxury'
+      END 
+    FROM vehicles
+    '''
+  )
+  print("Query 7: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
 
   # 8
   cursor.execute(
@@ -234,19 +283,62 @@ if __name__ == '__main__':
   # TODO: finish 9a with extra stuff
   cursor.execute(
     '''
-    SELECT DISTINCT vehicles.vehicleID, Description, Year, Type, Category
-    FROM customers
-	  JOIN rentals ON rentals.CustID = customers.CustID 
-    JOIN vehicles ON vehicles.vehicleID = rentals.vehicleID
-    WHERE Name = "J. Brown"
+    SELECT 
+      StartDate, 
+      v.vehicleID, 
+      v.Description, 
+      v.Year,
+      CASE
+              WHEN v.Type = 1 THEN 'Compact'
+              WHEN v.Type = 2 THEN 'Medium'
+              WHEN v.Type = 3 THEN 'Large'
+              WHEN v.Type = 4 THEN 'SUV'
+              WHEN v.Type = 5 THEN 'Truck'
+              WHEN v.Type = 6 THEN 'VAN'
+        END as Type,  
+      CASE
+              WHEN v.Category = 0 THEN 'Basic'
+              WHEN v.Category = 1 THEN 'Luxury'
+      END as Category, 
+      r.TotalAmount,
+      CASE
+        WHEN r.RentalType = 1 THEN ROUND(r.TotalAmount / rates.Daily)
+        WHEN r.RentalType = 7 THEN ROUND(r.TotalAmount / rates.Weekly)
+      END as UnitPrice,
+      CASE
+        WHEN r.RentalType = 7 THEN 'Weekly'
+        WHEN r.RentalType = 1 THEN 'Daily'
+      END AS RentalType,
+      CASE
+        WHEN r.PaymentDate IS NOT NULL THEN 'Paid'
+        WHEN r.PaymentDate IS NULL THEN 'Not Paid'
+      END AS IsPaid
+    FROM customers c
+    JOIN rentals r ON r.CustID = c.CustID 
+    JOIN vehicles v ON v.vehicleID = r.vehicleID
+    JOIN rates ON rates.Category = v.Category AND rates.Type = v.Type
+    WHERE c.Name = "J. Brown"
+    ORDER BY StartDate
     '''
   )
-  print("Query 9: ")
+  print("Query 9a: ")
   rows = cursor.fetchall()
   for row in rows:
     print(row)
 
-  # TODO 9b but with current balance
+  # 9b
+  cursor.execute(
+    '''
+    SELECT  TOTAL(TotalAmount) as 'Total Owed'
+    FROM rentals
+    JOIN customers on rentals.CustID = customers.CustID
+    WHERE rentals.PaymentDate IS NULL AND Name = "J. Brown";
+    '''
+  )
+  print("Query 9b: ")
+  rows = cursor.fetchall()
+  for row in rows:
+    print(row)
 
   # 10
   cursor.execute(
