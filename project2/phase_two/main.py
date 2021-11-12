@@ -302,8 +302,8 @@ if __name__ == '__main__':
       END as Category, 
       r.TotalAmount,
       CASE
-        WHEN r.RentalType = 1 THEN ROUND(r.TotalAmount / rates.Daily)
-        WHEN r.RentalType = 7 THEN ROUND(r.TotalAmount / rates.Weekly)
+        WHEN r.RentalType = 1 THEN rates.Daily
+        WHEN r.RentalType = 7 THEN ROUND(r.TotalAmount / (r.Qty * 7))
       END as UnitPrice,
       CASE
         WHEN r.RentalType = 7 THEN 'Weekly'
