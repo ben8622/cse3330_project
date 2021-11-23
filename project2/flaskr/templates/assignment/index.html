@@ -1,1 +1,43 @@
-<h1>assignment</h1>
+<body>
+  <h1>Assignment</h1>
+  <button id="query_1">Query 1</button>
+  <button id="query_2">Query 2</button>
+  <button id="query_3">Query 3</button>
+</body>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+  $(function() {
+
+    $("#query_1").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.query_1')}}",
+        success: function(response){
+          
+        }
+      })
+    });
+    $("#query_2").on("click", function(e){
+      e.preventDefault();
+    });
+    $("#query_3").on("click", function(e){
+      e.preventDefault();
+    });
+
+  });
+</script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<style>
+  body{
+    background-color: #404040;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 5px;
+  }
+  button{
+    background-color: #eb7900;
+    border-radius: 10px; 
+  }
+</style>

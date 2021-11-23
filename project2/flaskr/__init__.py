@@ -40,4 +40,7 @@ def create_app(test_config=None):
     def home():
         return render_template('/home.html')
 
+    from . import db
+    db.init_app(app)
+
     return app
