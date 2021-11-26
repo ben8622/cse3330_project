@@ -1,8 +1,19 @@
 <body>
   <h1>Assignment</h1>
-  <button id="query_1">Query 1</button>
-  <button id="query_2">Query 2</button>
-  <button id="query_3">Query 3</button>
+  <div>
+    <button id="query_1">Query 1</button>
+    <button id="query_2">Query 2</button>
+    <button id="query_3">Query 3</button>
+  </div>
+  <div id="query_output">
+    <table class="table">
+      <thead id="query_table_header"></thead>
+      <tbody id="query_table_body">
+
+      </tbody>
+    </table>
+  </div>
+
 </body>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -13,8 +24,27 @@
       e.preventDefault();
       $.ajax({
         url: "{{url_for('assignment.query_1')}}",
+        dataType: 'json',
         success: function(response){
-          
+          $("#query_table_body").html("")
+          var queryColumns = ["VIN", "Description", "Year", "Type", "Category"]
+          var trHeader = $("<tr>")
+          queryColumns.forEach(col => {
+            var td = $("<td>");
+            td.text(col);
+            trHeader.append(td);
+          })
+          response.forEach(entity => {
+            var tr = $("<tr>")
+            entity.forEach(attr => {
+              var td = $("<td>");
+              td.text(attr);
+              tr.append(td);
+            })
+            var temp = tr.html()
+            $("#query_table_body").append(tr)
+            $("#query_table_header").html(trHeader)
+          })
         }
       })
     });

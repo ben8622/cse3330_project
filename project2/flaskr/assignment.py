@@ -34,4 +34,7 @@ def query_1():
     FROM vehicles
     '''
   ).fetchall()
-  return json.dumps(rows)
+  data = []
+  for row in rows:
+      data.append([x for x in row]) # or simply data.append(list(row))
+  return json.dumps(data)
