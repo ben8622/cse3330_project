@@ -1,16 +1,13 @@
 <body>
-  <h1>Assignment</h1>
-  <div>
-    <button id="query_1">Query 1</button>
-    <button id="query_2">Query 2</button>
-    <button id="query_3">Query 3</button>
+  <h1  class="text-center">Assignment</h1>
+  <div class="text-center">
+    <button id="example_query_1">Example Query 1</button>
+    <button id="example_query_2">Example Query 2</button>
   </div>
-  <div id="query_output">
-    <table class="table">
+  <div>
+    <table class="table table-bordered table-hover table-responsive-sm">
       <thead id="query_table_header"></thead>
-      <tbody id="query_table_body">
-
-      </tbody>
+      <tbody id="query_table_body"></tbody>
     </table>
   </div>
 
@@ -20,47 +17,68 @@
 <script type=text/javascript>
   $(function() {
 
-    $("#query_1").on("click", function(e){
+    $("#example_query_1").on("click", function(e){
       e.preventDefault();
       $.ajax({
-        url: "{{url_for('assignment.query_1')}}",
+        url: "{{url_for('assignment.example_query_1')}}",
         dataType: 'json',
         success: function(response){
-          $("#query_table_body").html("")
-          var queryColumns = ["VIN", "Description", "Year", "Type", "Category"]
-          var trHeader = $("<tr>")
-          queryColumns.forEach(col => {
-            var td = $("<td>");
-            td.text(col);
-            trHeader.append(td);
-          })
-          response.forEach(entity => {
-            var tr = $("<tr>")
-            entity.forEach(attr => {
-              var td = $("<td>");
-              td.text(attr);
-              tr.append(td);
-            })
-            var temp = tr.html()
-            $("#query_table_body").append(tr)
-            $("#query_table_header").html(trHeader)
-          })
+          var cols = ["VIN", "Description", "Year", "Type", "Category"]
+          createTable(response, cols)
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
         }
+      });
+    });
+
+    $("#example_query_2").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.example_query_2')}}",
+        dataType: 'json',
+        success: function(response){
+          var cols = ["CustID", "Name", "Phone"]
+          createTable(response, cols)
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
+        }
+      });
+    });
+
+    function createTable(rows, cols){
+      // Empty table data
+      $("#query_table_body").html("")
+
+      // Create the Table Headers for the query
+      var trHeader = $("<tr>");
+      cols.forEach(col => {
+        var th = $("<th>");
+        th.text(col);
+        trHeader.append(th);
+      });
+      $("#query_table_header").html(trHeader)
+
+      // Create the rows in table
+      rows.forEach(entity => {
+        var tr = $("<tr>")
+        entity.forEach(attr => {
+          var td = $("<td>");
+          td.text(attr);
+          tr.append(td);
+        })
+        var temp = tr.html()
+        $("#query_table_body").append(tr)
       })
-    });
-    $("#query_2").on("click", function(e){
-      e.preventDefault();
-    });
-    $("#query_3").on("click", function(e){
-      e.preventDefault();
-    });
+    }
 
   });
 </script>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <style>
-  body{
+  /* body{
     background-color: #404040;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -69,5 +87,5 @@
   button{
     background-color: #eb7900;
     border-radius: 10px; 
-  }
+  } */
 </style>

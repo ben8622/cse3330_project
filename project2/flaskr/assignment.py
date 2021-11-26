@@ -12,8 +12,8 @@ bp = Blueprint('assignment', __name__, url_prefix="/")
 def assignment():
   return render_template('assignment/index.html')
 
-@bp.route('/assignment/query_1', methods=['GET'])
-def query_1():
+@bp.route('/assignment/example_query_1', methods=['GET'])
+def example_query_1():
   db = get_db()
   cur = db.cursor()
   rows = cur.execute(
@@ -36,5 +36,20 @@ def query_1():
   ).fetchall()
   data = []
   for row in rows:
-      data.append([x for x in row]) # or simply data.append(list(row))
+    data.append([x for x in row]) # or simply data.append(list(row))
+  return json.dumps(data)
+
+@bp.route('/assignment/example_query_2', methods=['GET'])
+def example_query_2():
+  db = get_db()
+  cur = db.cursor()
+  rows = cur.execute(
+    '''
+    SELECT *
+    FROM customers
+    '''
+  ).fetchall()
+  data = []
+  for row in rows:
+    data.append([x for x in row]) # or simply data.append(list(row))
   return json.dumps(data)
