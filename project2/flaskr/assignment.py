@@ -4,9 +4,18 @@ from flaskr.db import get_db
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-# from flaskr.db import get_db
-
 bp = Blueprint('assignment', __name__, url_prefix="/")
+
+def select_query(query):
+  db = get_db()
+  cur = db.cursor()
+  rows = cur.execute(query).fetchall()
+
+  data = []
+  for row in rows:
+    data.append([x for x in row])
+  
+  return json.dumps(data)
 
 @bp.route('/assignment', methods=['GET'])
 def assignment():
@@ -14,9 +23,7 @@ def assignment():
 
 @bp.route('/assignment/example_query_1', methods=['GET'])
 def example_query_1():
-  db = get_db()
-  cur = db.cursor()
-  rows = cur.execute(
+  return select_query(
     '''
     SELECT VehicleID as VIN, Description, Year,
       CASE
@@ -33,23 +40,13 @@ def example_query_1():
       END 
     FROM vehicles
     '''
-  ).fetchall()
-  data = []
-  for row in rows:
-    data.append([x for x in row]) # or simply data.append(list(row))
-  return json.dumps(data)
+  )
 
 @bp.route('/assignment/example_query_2', methods=['GET'])
 def example_query_2():
-  db = get_db()
-  cur = db.cursor()
-  rows = cur.execute(
+  return select_query(
     '''
     SELECT *
     FROM customers
     '''
-  ).fetchall()
-  data = []
-  for row in rows:
-    data.append([x for x in row]) # or simply data.append(list(row))
-  return json.dumps(data)
+  )
