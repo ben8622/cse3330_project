@@ -50,3 +50,12 @@ def example_query_2():
     FROM customers
     '''
   )
+
+@bp.route('/assignment/example_query_3', methods=['GET'])
+def example_query_3():
+  return select_query(
+    '''
+    SELECT COUNT(*)
+    FROM rentals
+    '''
+  )
