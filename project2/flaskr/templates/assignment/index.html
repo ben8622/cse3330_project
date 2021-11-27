@@ -3,6 +3,7 @@
   <div class="text-center">
     <button id="example_query_1">Example Query 1</button>
     <button id="example_query_2">Example Query 2</button>
+    <button id="example_query_3">Example Query 3</button>
   </div>
   <div>
     <table class="table table-bordered table-hover table-responsive-sm">
@@ -10,7 +11,6 @@
       <tbody id="query_table_body"></tbody>
     </table>
   </div>
-
 </body>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -46,6 +46,21 @@
         }
       });
     });
+
+    $("#example_query_3").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.example_query_3')}}",
+        dataType: 'json',
+        success: function(response){
+          var cols = ["Rentals Count"]
+          createTable(response, cols);
+        },
+        error: function(jqXHR, status, error){
+          alert(error);
+        }
+      })
+    })
 
     function createTable(rows, cols){
       // Empty table data
