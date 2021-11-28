@@ -13,3 +13,6 @@ These steps are assuming you can already run a python program. Because we are us
 5. Finally run `flask run`
 
 You should now be able to navigate to the website by going to `http://127.0.0.1:5000/` in your internet browser. From here I recommend going to `http://127.0.0.1:5000/assignment` since that is where most of the actual development will take place.
+
+## Helpful Stuff
+- I made a [basic youtube video](https://www.youtube.com/watch?v=nwafy_JwdNU) that walks through the website (as of 11/27/21) and goes over the entire sequence from a user pressing a button to when the data is displayed to the page. If you don't care about the details and just want to recreate it, skip to [13:05](https://youtu.be/nwafy_JwdNU?t=785)
