@@ -1,5 +1,77 @@
 <body>
   <h1  class="text-center">Assignment</h1>
+
+  <div>
+    <h2>Requirement 1, Create New Customer</h2>
+    <hr/>
+    <form id="newCustForm">
+
+      <div>
+        <label>Name:</label>
+        <input type="text" name="name"/>
+      </div>
+      <div>
+        <label >Phone:</label>
+        <input type="text" name="phone"/>
+      </div>
+
+    </form>
+    <button id="createCustBtn">Submit Button</button>
+  </div>
+
+  <div>
+    <h2>Requirement 2, Create New Vehicles</h2>
+    <hr/>
+    <form id="newVehicleForm">
+
+      <div>
+        <label>Vehicle Id:</label>
+        <input type="text" name="vehicleId"/>
+      </div>
+      <div>
+        <label >Description:</label>
+        <input type="text" name="description"/>
+      </div>
+      <div>
+        <label >Year:</label>
+        <input type="text" name="year"/>
+      </div>
+      <div>
+        <label >Type:</label>
+        <select name="type">
+          <option value="1">Compact</option>
+          <option value="2">Medium</option>
+          <option value="3">Large</option>
+          <option value="4">SUV</option>
+          <option value="5">Truck</option>
+          <option value="6">Van</option>
+        </select>
+      </div>
+      <div>
+        <label >Category:</label>
+        <select name="category">
+          <option value="1">Basic</option>
+          <option value="2">Luxury</option>
+        </select>
+      </div>
+
+    </form>
+    <button id="createVehicleBtn">Submit Button</button>
+  </div>
+
+  <div>
+    <h2>Requirement 3, Create New Rental</h2>
+    <hr/>
+    <form id="newRentalForm">
+
+        <select id="rentalVehicleId" class="form-control">
+          <option value="-1">Select a vehicle</option>
+        </select>
+
+    </form>
+    <button id="createRentalBtn">Submit Button</button>
+  </div>
+
   <div class="text-center">
     <button id="example_query_1">Example Query 1</button>
     <button id="example_query_2">Example Query 2</button>
@@ -14,8 +86,62 @@
 </body>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script type=text/javascript>
   $(function() {
+
+    // REQUIREMENT 1
+    $("#createCustBtn").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.requirement1')}}",
+        type: "POST",
+        dataType: 'json',
+        data: $("#newCustForm").serialize(),
+        success: function(response){
+          alert("Created customer!")
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
+        }
+      });
+    })
+
+    // REQUIREMENT 2
+    $("#createVehicleBtn").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.requirement2')}}",
+        type: "POST",
+        dataType: 'json',
+        data: $("#newVehicleForm").serialize(),
+        success: function(response){
+          alert("Created vehicle!")
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
+        }
+      });
+    })
+
+    $("#rentalVehicleId").select2({
+      placeholder: 'Select a vehicle',
+      ajax: {
+        url: "{{url_for('assignment.available_vehicles')}}",
+        dataType: "json",
+        processResults: function(data){
+          debugger;
+          return {
+            results: data.map(x => {
+              return {
+                'text': x[1],
+                'value': x[0]
+              }
+            })
+          }
+        }
+      }
+    });
 
     $("#example_query_1").on("click", function(e){
       e.preventDefault();
@@ -91,7 +217,7 @@
   });
 </script>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
 <style>
   /* body{
     background-color: #404040;

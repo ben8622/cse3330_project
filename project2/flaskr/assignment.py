@@ -17,6 +17,17 @@ def select_query(query):
   
   return json.dumps(data)
 
+def _select_query(query):
+  db = get_db()
+  cur = db.cursor()
+  rows = cur.execute(query).fetchall()
+
+  data = []
+  for row in rows:
+    data.append([x for x in row])
+  
+  return data
+
 @bp.route('/assignment', methods=['GET'])
 def assignment():
   return render_template('assignment/index.html')
@@ -58,4 +69,58 @@ def example_query_3():
     SELECT COUNT(*)
     FROM rentals
     '''
+  )
+
+@bp.route('/assignment/requirement1', methods=['POST'])
+def requirement1():
+  customers = _select_query(
+    """
+    SELECT *
+    FROM customers
+    ORDER BY CustId
+    """
+  )
+  last_id = customers[-1][0]
+
+  cust_id = last_id + 1
+  name = request.form["name"]
+  phone = request.form["phone"]
+  insert_string = f"INSERT INTO customers VALUES ({cust_id},'{name}','{phone}')"
+
+  db = get_db()
+  cursor = db.cursor()
+  cursor.execute(insert_string).fetchall()
+  db.commit()
+
+  cursor.close()
+  db.close()
+
+  return json.dumps("")
+
+@bp.route('/assignment/requirement2', methods=['POST'])
+def requirement2():
+  vehicle_id = request.form["vehicleId"]
+  description = request.form["description"]
+  year = request.form["year"]
+  type = request.form["type"]
+  category = request.form["category"]
+  insert_string = f"INSERT INTO vehicles VALUES ('{vehicle_id}','{description}','{year}', {type}, {category})"
+
+  db = get_db()
+  cursor = db.cursor()
+  cursor.execute(insert_string).fetchall()
+  db.commit()
+
+  cursor.close()
+  db.close()
+
+  return json.dumps("")
+
+@bp.route('/assignment/available_vehicles', methods=['GET'])
+def available_vehicles():
+  return select_query(
+    """
+    SELECT *
+    FROM vehicles
+    """
   )
