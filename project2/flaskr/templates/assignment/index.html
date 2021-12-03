@@ -64,12 +64,89 @@
     <hr/>
     <form id="newRentalForm">
 
-        <select id="rentalVehicleId" class="form-control">
-          <option value="-1">Select a vehicle</option>
-        </select>
+        <div>
+          <label for="rentalVehicleId">Available Vehicles:</label>
+          <select id="rentalVehicleId" name="vehicleId">
+          </select>
+        </div>
+
+        <div>
+          <label for="rentalCustomerId">Customer:</label>
+          <select id="rentalCustomerId" name="customerId">
+          </select>
+        </div>
+
+        <div>
+          <label for="startDate">Start Date:</label>
+          <input type="date" id="startDate"  name="startDate"/>
+        </div>
+
+        <div>
+          <label for="endDate">Return Date:</label>
+          <input type="date" id="endDate"  name="returnDate"/>
+        </div>
+
+        <div>
+          <label >Daily or Weekly:</label>
+          <select  name="rentalType">
+            <option value="1">Daily</option>
+            <option value="7">Weekly</option>
+          </select>
+        </div>
+
+        <div>
+          <label >Pay now?</label>
+          <select  name="payNow">
+            <option  value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
 
     </form>
     <button id="createRentalBtn">Submit Button</button>
+  </div>
+
+  <div>
+    <h2>Requirement 4, Return Car</h2>
+    <hr/>
+  </div>
+
+  <div>
+    <h2>Requirement 5a, List Customers Remaining Balance</h2>
+    <hr/>
+    <form id="customerRemainingBalanceForm">
+
+      <div>
+        <label for="">Customer Id:</label>
+        <input type="number" name="customerId">
+      </div>
+
+      <div>
+        <label for="">Customer Name:</label>
+        <input name="name">
+      </div>
+
+    </form>
+    <button id="listCustomersBalanceBtn">Submit Button</button>
+  </div>
+
+  <div>
+    <h2>Requirement 5b, List Vehicles Average Price</h2>
+    <hr/>
+    <form id="vehiclesAvgPriceForm">
+
+      <div>
+        <label for="">VIN:</label>
+        <input name="vin">
+      </div>
+
+      <div>
+        <label for="">Vehicle Description:</label>
+        <input name="description">
+      </div>
+
+    </form>
+    <button id="vehiclesAvgPriceBtn">Submit Button</button>
   </div>
 
   <div class="text-center">
@@ -124,23 +201,57 @@
       });
     })
 
-    $("#rentalVehicleId").select2({
-      placeholder: 'Select a vehicle',
-      ajax: {
-        url: "{{url_for('assignment.available_vehicles')}}",
-        dataType: "json",
-        processResults: function(data){
-          debugger;
-          return {
-            results: data.map(x => {
-              return {
-                'text': x[1],
-                'value': x[0]
-              }
-            })
-          }
+    // REQUIREMENT 3
+    $("#createRentalBtn").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.requirement3')}}",
+        type: "POST",
+        dataType: 'json',
+        data: $("#newRentalForm").serialize(),
+        success: function(response){
+          alert("Created rental!")
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
         }
-      }
+      });
+    });
+
+    // REQUIREMENT 5a
+    $("#listCustomersBalanceBtn").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.requirement5a')}}",
+        type: "POST",
+        dataType: 'json',
+        data: $("#customerRemainingBalanceForm").serialize(),
+        success: function(response){
+          var cols = ["Id", "Name", "Remaining Balance"]
+          createTable(response, cols);
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
+        }
+      });
+    });
+
+    // REQUIREMENT 5b
+    $("#vehiclesAvgPriceBtn").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.requirement5b')}}",
+        type: "POST",
+        dataType: 'json',
+        data: $("#vehiclesAvgPriceForm").serialize(),
+        success: function(response){
+          var cols = ["VIN", "Description", "Avg Daily Price"]
+          createTable(response, cols);
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
+        }
+      });
     });
 
     $("#example_query_1").on("click", function(e){
@@ -214,19 +325,80 @@
       })
     }
 
+    function loadAvailableVehicles(){
+      var select = $('#rentalVehicleId')
+      select.html("")
+      $.ajax({
+        url: "{{url_for('assignment.available_vehicles')}}",
+        dataType: "json",
+        success: function (data) {
+          var html_string = "";
+          data.forEach(x => {
+            var t = TYPES[x[3]];
+            var c = CATEGORIES[x[4]];
+            html_string = 
+              html_string + 
+              '<option value="'+x[0]+'">'+x[1]+', '+x[0]+', '+t+', '+c+'</option>'
+          })
+          select.html(html_string);
+        }
+      })
+    };
+    function loadAvailableCustomers(){
+      var select = $('#rentalCustomerId')
+      select.html("")
+      $.ajax({
+        url: "{{url_for('assignment.customers')}}",
+        dataType: "json",
+        success: function (data) {
+          var html_string = "";
+          data.forEach(x => {
+            html_string = 
+              html_string + 
+              '<option value="'+x[0]+'">'+x[1]+'</option>'
+          })
+          select.html(html_string);
+        }
+      })
+    };
+    function createView(){
+      $.ajax({
+        url: "{{url_for('assignment.createview')}}",
+        dataType: "json",
+        success: function (data) {
+        }
+      })
+    }
+      
+
+    loadAvailableVehicles();
+    loadAvailableCustomers();
+    createView();
+
+    const TYPES = {
+      '1': 'Compact',
+      '2': 'Medium',
+      '3': 'Large',
+      '4': 'SUV',
+      '5': 'Truck',
+      '6': 'Van',
+    };
+    const CATEGORIES = {
+      '0': 'Basic',
+      '1': 'Luxury'
+    }
+
   });
 </script>
 
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <style>
-  /* body{
-    background-color: #404040;
-    color: white;
+  body{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 5px;
   }
   button{
     background-color: #eb7900;
     border-radius: 10px; 
-  } */
+  }
 </style>
