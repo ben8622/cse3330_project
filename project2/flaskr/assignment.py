@@ -251,26 +251,19 @@ def requirement5b():
     where_clause = f"WHERE Description LIKE '%{desc}%'"
 
   select_str = """
-    SELECT VIN, 
-        Vehicle,
-        SUM(OrderAmount)/SUM(TotalDays) As DailyAvg
-    FROM vRentalInfo
+    SELECT vehicleid AS VIN, 
+        vehicles.description AS Description,
+      CASE
+        WHEN OrderAmount IS NULL THEN 'Not Available'
+        ELSE SUM(OrderAmount)/SUM(TotalDays)
+      END as DailyAvg
+    FROM vehicles
+    LEFT JOIN vRentalInfo On vRentalInfo.VIN = vehicles.vehicleid
   """
 
-  select_str = select_str + where_clause + "Group by VIN Order by DailyAvg"
+  select_str = select_str + where_clause + "Group by vehicles.vehicleid Order by vehicleid"
 
   return select_query(select_str)
-
-
-  # db = get_db()
-  # cursor = db.cursor()
-  # cursor.execute(insert_string).fetchall()
-  # db.commit()
-
-  # cursor.close()
-  # db.close()
-
-  return json.dumps("")
 
 
 ########### SELECT HELPERS #############
