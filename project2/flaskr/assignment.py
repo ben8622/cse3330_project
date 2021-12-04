@@ -171,8 +171,6 @@ def requirement3():
     )
     """
   
-  print(insert_string)
-
   db = get_db()
   cursor = db.cursor()
   cursor.execute(insert_string).fetchall()
@@ -234,16 +232,12 @@ def requirement5b():
 
   select_str = """
     SELECT VIN, 
-      vehicles.Description,
-      SUM(rentals.TotalAmount)/SUM(rentaltype*qty) As DailyAvg,
-      SUM(rentaltype*qty) as Days,
-      SUM(rentals.TotalAmount) as Total
+        Vehicle,
+        SUM(OrderAmount)/SUM(TotalDays) As DailyAvg
     FROM vRentalInfo
-    JOIN vehicles ON vehicles.VehicleId = vRentalInfo.VIN
-    LEFT JOIN rentals On vRentalInfo.VIN = rentals.VehicleId AND vRentalInfo.ReturnDate = rentals.ReturnDate
   """
 
-  select_str = select_str + where_clause + "GROUP BY vehicles.VehicleID"
+  select_str = select_str + where_clause + "Group by VIN Order by DailyAvg"
 
   return select_query(select_str)
 
@@ -276,6 +270,27 @@ def customers():
     """
     SELECT *
     FROM customers
+    """
+  )
+
+@bp.route('/assignment/return_customers', methods=['GET'])
+def return_customers():
+  return select_query(
+    """
+    SELECT DISTINCT c.CustId, Name
+    FROM customers c
+    JOIN rentals r ON r.CustId = c.CustId
+    ORDER BY Name
+    """
+  )
+
+@bp.route('/assignment/return_vehicles', methods=['GET'])
+def return_vehicles():
+  return select_query(
+    """
+    SELECT DISTINCT v.VehicleId, Description, Type, Category
+    FROM vehicles v
+    JOIN rentals r ON r.VehicleId = v.VehicleId
     """
   )
 

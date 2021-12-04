@@ -109,6 +109,28 @@
   <div>
     <h2>Requirement 4, Return Car</h2>
     <hr/>
+    <form>
+
+      <div>
+        <label for="returnDate">Return Date:</label>
+        <input type="date" id="startDate"  name="returnDate"/>
+      </div>
+
+      <div>
+        <label for="returnDate">Customer Name:</label>
+        <select id="returnCustomerName"  name="returnDate">
+        </select>
+      </div>
+
+      <div>
+        <label for="returnDate">Vehicle:</label>
+        <select id="returnVehicleId"  name="vehicleId">
+        </select>
+      </div>
+
+    </form>
+    <button id="returnRentalBtn">Return</button>
+    <div id="rentalAmountOwed"></div>
   </div>
 
   <div>
@@ -211,6 +233,23 @@
         data: $("#newRentalForm").serialize(),
         success: function(response){
           alert("Created rental!")
+        },
+        error: function(jqXHR, status, error){
+          alert(error)
+        }
+      });
+    });
+
+    // REQUIREMENT 4
+    $("#returnRentalBtn").on("click", function(e){
+      e.preventDefault();
+      $.ajax({
+        url: "{{url_for('assignment.requirement4')}}",
+        type: "POST",
+        dataType: 'json',
+        data: $("#returnRentalForm").serialize(),
+        success: function(response){
+          alert("Amount owed: ")
         },
         error: function(jqXHR, status, error){
           alert(error)
@@ -344,11 +383,47 @@
         }
       })
     };
+    function loadAvailableVehiclesRenting(){
+      var select = $('#returnVehicleId')
+      select.html("")
+      $.ajax({
+        url: "{{url_for('assignment.return_vehicles')}}",
+        dataType: "json",
+        success: function (data) {
+          var html_string = "";
+          data.forEach(x => {
+            var t = TYPES[x[2]];
+            var c = CATEGORIES[x[3]];
+            html_string = 
+              html_string + 
+              '<option value="'+x[0]+'">'+x[1]+', '+x[0]+', '+t+', '+c+'</option>'
+          })
+          select.html(html_string);
+        }
+      })
+    };
     function loadAvailableCustomers(){
       var select = $('#rentalCustomerId')
       select.html("")
       $.ajax({
         url: "{{url_for('assignment.customers')}}",
+        dataType: "json",
+        success: function (data) {
+          var html_string = "";
+          data.forEach(x => {
+            html_string = 
+              html_string + 
+              '<option value="'+x[0]+'">'+x[1]+'</option>'
+          })
+          select.html(html_string);
+        }
+      })
+    };
+    function loadAvailableCustomersRenting(){
+      var select = $('#returnCustomerName')
+      select.html("")
+      $.ajax({
+        url: "{{url_for('assignment.return_customers')}}",
         dataType: "json",
         success: function (data) {
           var html_string = "";
@@ -373,6 +448,8 @@
 
     loadAvailableVehicles();
     loadAvailableCustomers();
+    loadAvailableVehiclesRenting();
+    loadAvailableCustomersRenting();
     createView();
 
     const TYPES = {
