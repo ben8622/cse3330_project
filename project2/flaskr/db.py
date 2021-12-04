@@ -96,7 +96,7 @@ def init_db():
         if "'NULL'" in entity:
             entity = entity.replace("'NULL'", "NULL")
         ## Format our INSERT string
-        insert_string = f'INSERT INTO rentals VALUES ( {entity} )'
+        insert_string = f'INSERT INTO rentals VALUES ( {entity}, NULL )'
         ## Add to execution
         cursor.execute(insert_string)
 

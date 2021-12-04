@@ -183,16 +183,36 @@ def requirement3():
 
 @bp.route('/assignment/requirement4', methods=['POST'])
 def requirement4():
+  vin = request.form["vehicleId"]
+  return_date = request.form["returnDate"]
+  custId = request.form["customerName"]
 
-  # db = get_db()
-  # cursor = db.cursor()
-  # cursor.execute(insert_string).fetchall()
-  # db.commit()
+  ## Grab the payment owed
+  rental = _select_query(
+    f"""
+    SELECT *
+    FROM rentals
+    WHERE VehicleId = '{vin}' AND ReturnDate = '{return_date}' AND CustId = {custId}
+    """
+  )
+  payment_owed = f'${rental[0][7]}0' if rental[0][8] == None else "$0.00" 
 
-  # cursor.close()
-  # db.close()
+  ## Update the Returned attribute
+  db = get_db()
+  cursor = db.cursor()
+  cursor.execute(
+    f"""
+    UPDATE rentals
+    SET Returned = 1
+    WHERE VehicleId = '{vin}' AND ReturnDate = '{return_date}' AND CustId = {custId}
+    """
+  ).fetchall()
+  db.commit()
 
-  return json.dumps("")
+  cursor.close()
+  db.close()
+
+  return json.dumps(payment_owed)
 
 @bp.route('/assignment/requirement5a', methods=['POST'])
 def requirement5a():

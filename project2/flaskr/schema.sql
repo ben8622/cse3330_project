@@ -34,3 +34,6 @@ CREATE TABLE vehicles (
   Type INTEGER NOT NULL,
   Category INTEGER NOT NULL
 );
+
+ALTER TABLE rentals 
+ADD column Returned INT NULL;

@@ -109,7 +109,7 @@
   <div>
     <h2>Requirement 4, Return Car</h2>
     <hr/>
-    <form>
+    <form id="returnForm">
 
       <div>
         <label for="returnDate">Return Date:</label>
@@ -118,7 +118,7 @@
 
       <div>
         <label for="returnDate">Customer Name:</label>
-        <select id="returnCustomerName"  name="returnDate">
+        <select id="returnCustomerName"  name="customerName">
         </select>
       </div>
 
@@ -247,9 +247,9 @@
         url: "{{url_for('assignment.requirement4')}}",
         type: "POST",
         dataType: 'json',
-        data: $("#returnRentalForm").serialize(),
+        data: $("#returnForm").serialize(),
         success: function(response){
-          alert("Amount owed: ")
+          alert("Amount owed: " + response)
         },
         error: function(jqXHR, status, error){
           alert(error)
